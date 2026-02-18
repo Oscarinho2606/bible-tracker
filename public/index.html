@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mi Diario Bíblico</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C8A84B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diario Bíblico">
 <style>
 /* ═══════════════════════════════════════════
    VARIABLES & RESET
@@ -1796,6 +1801,16 @@ document.querySelectorAll('.modal-overlay').forEach(el=>{
 
 // INIT
 renderSemanas();
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js')
+        .then(function(reg) { console.log('✅ Service Worker registrado'); })
+        .catch(function(err) { console.log('❌ SW error:', err); });
+    });
+  }
 </script>
 </body>
 </html>
