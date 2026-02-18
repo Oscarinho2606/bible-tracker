@@ -25,22 +25,10 @@ app.use(express.static(path.join(__dirname, 'public')));   // sirve el index.htm
 //  Opción B — Parámetros individuales (para desarrollo local):
 //    Edita los valores de la sección "local" debajo.
 //
-const pool = new Pool(
-  process.env.DATABASE_URL
-    ? {
-        connectionString: process.env.DATABASE_URL,
-        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
-      }
-    : {
-        // ── Cambia estos valores según tu instalación local ──
-        host:     process.env.DB_HOST     || 'localhost',
-        port:     process.env.DB_PORT     || 5432,
-        database: process.env.DB_NAME     || 'bible_tracker',
-        user:     process.env.DB_USER     || 'postgres',
-        password: process.env.DB_PASSWORD || 'Oscarinho28.',
-      }
-);
-
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 // Verificar conexión al arrancar
 pool.connect((err, client, release) => {
   if (err) {
