@@ -44,7 +44,7 @@ const pool = new Pool(
 // Verificar conexión al arrancar
 pool.connect((err, client, release) => {
   if (err) {
-    console.error('❌ Error al conectar con PostgreSQL:', err.message);
+    console.error('❌ Error al conectar con PostgreSQL:', err);
     console.error('   Verifica tu configuración de base de datos.');
   } else {
     console.log('✅ Conexión a PostgreSQL exitosa');
