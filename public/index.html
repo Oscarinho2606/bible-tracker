@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Diario Bíblico</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════════════════ */
+:root {
+  --gold:        #C8A84B;
+  --gold-light:  #E8D08A;
+  --gold-pale:   #F5EDD0;
+  --blue-deep:   #1A3A5C;
+  --blue-mid:    #2E6EA6;
+  --blue-light:  #5B9FD4;
+  --blue-pale:   #D6E9F8;
+  --white:       #FDFCF8;
+  --cream:       #F8F4EC;
+  --text-dark:   #1C2B3A;
+  --text-mid:    #3D5570;
+  --text-soft:   #7A95AE;
+  --border-gold: rgba(200,168,75,0.3);
+  --border-blue: rgba(46,110,166,0.2);
+  --shadow-soft: 0 4px 30px rgba(26,58,92,0.12);
+  --shadow-card: 0 8px 40px rgba(26,58,92,0.15);
+  --radius:      12px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'EB Garamond', serif;
+  background: var(--blue-deep);
+  color: var(--text-dark);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   FONDO — AGUA ANIMADA
+═══════════════════════════════════════════ */
+.water-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #0f2744 0%,
+    #1a3a5c 30%,
+    #1e4d78 60%,
+    #2a6090 100%
+  );
+}
+
+/* Ondas SVG animadas */
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 180px;
+  opacity: 0.18;
+}
+.wave svg { width: 100%; height: 100%; }
+.wave-1 { animation: wave-move 9s linear infinite; opacity: 0.22; bottom: 0; }
+.wave-2 { animation: wave-move 13s linear infinite reverse; opacity: 0.14; bottom: 20px; }
+.wave-3 { animation: wave-move 17s linear infinite; opacity: 0.10; bottom: 40px; }
+
+@keyframes wave-move {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Destellos de luz en el agua */
+.light-ray {
+  position: absolute;
+  top: -20%;
+  width: 2px;
+  height: 140%;
+  background: linear-gradient(180deg, rgba(232,208,138,0.6) 0%, rgba(91,159,212,0.2) 50%, transparent 100%);
+  transform-origin: top center;
+  filter: blur(8px);
+}
+.light-ray:nth-child(1) { left: 20%; transform: rotate(-8deg);  animation: ray-pulse 6s ease-in-out infinite; }
+.light-ray:nth-child(2) { left: 40%; transform: rotate(4deg);   animation: ray-pulse 8s ease-in-out infinite 2s; opacity: 0.7; }
+.light-ray:nth-child(3) { left: 60%; transform: rotate(-3deg);  animation: ray-pulse 7s ease-in-out infinite 1s; opacity: 0.5; }
+.light-ray:nth-child(4) { left: 78%; transform: rotate(6deg);   animation: ray-pulse 9s ease-in-out infinite 3s; opacity: 0.6; }
+
+@keyframes ray-pulse {
+  0%,100% { opacity: 0.3; transform: rotate(var(--r, -8deg)) scaleX(1); }
+  50%      { opacity: 0.8; transform: rotate(var(--r, -8deg)) scaleX(1.8); }
+}
+
+/* Burbujas flotantes */
+.bubbles {
+  position: absolute;
+  inset: 0;
+}
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), rgba(91,159,212,0.1));
+  border: 1px solid rgba(255,255,255,0.25);
+  animation: float-up linear infinite;
+}
+.bubble:nth-child(1)  { width:8px;  height:8px;  left:10%; animation-duration:12s; animation-delay:0s;   }
+.bubble:nth-child(2)  { width:5px;  height:5px;  left:25%; animation-duration:15s; animation-delay:2s;   }
+.bubble:nth-child(3)  { width:12px; height:12px; left:40%; animation-duration:10s; animation-delay:4s;   }
+.bubble:nth-child(4)  { width:6px;  height:6px;  left:55%; animation-duration:14s; animation-delay:1s;   }
+.bubble:nth-child(5)  { width:9px;  height:9px;  left:70%; animation-duration:11s; animation-delay:6s;   }
+.bubble:nth-child(6)  { width:4px;  height:4px;  left:85%; animation-duration:16s; animation-delay:3s;   }
+.bubble:nth-child(7)  { width:7px;  height:7px;  left:15%; animation-duration:13s; animation-delay:8s;   }
+.bubble:nth-child(8)  { width:10px; height:10px; left:60%; animation-duration:18s; animation-delay:5s;   }
+
+@keyframes float-up {
+  0%   { bottom: -20px; opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.3; }
+  100% { bottom: 110%; opacity: 0; }
+}
+
+/* Luz ambiental superior */
+.ambient-light {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 50%;
+  background: radial-gradient(ellipse, rgba(232,208,138,0.15) 0%, rgba(91,159,212,0.08) 40%, transparent 70%);
+  animation: ambient-pulse 8s ease-in-out infinite;
+}
+@keyframes ambient-pulse {
+  0%,100% { opacity: 0.7; transform: translateX(-50%) scaleY(1); }
+  50%      { opacity: 1;   transform: translateX(-50%) scaleY(1.1); }
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT PRINCIPAL
+═══════════════════════════════════════════ */
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header {
+  text-align: center;
+  padding: 56px 24px 44px;
+  position: relative;
+}
+
+.header-glass {
+  display: inline-block;
+  background: rgba(253,252,248,0.08);
+  border: 1px solid rgba(232,208,138,0.25);
+  border-radius: 24px;
+  padding: 40px 60px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 60px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+  animation: header-appear 1s cubic-bezier(0.34,1.2,0.64,1);
+}
+@keyframes header-appear {
+  from { opacity:0; transform: translateY(-20px) scale(0.97); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+
+/* Cruz decorativa */
+.cross-icon {
+  position: relative;
+  width: 40px;
+  height: 44px;
+  margin: 0 auto 20px;
+  filter: drop-shadow(0 0 12px rgba(232,208,138,0.8));
+}
+.cross-icon::before, .cross-icon::after {
+  content: '';
+  position: absolute;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  border-radius: 3px;
+}
+.cross-icon::before { width:5px; height:44px; left:50%; transform:translateX(-50%); }
+.cross-icon::after  { width:32px; height:5px; top:28%; left:50%; transform:translateX(-50%); }
+
+.header-verse {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(232,208,138,0.7);
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+  text-transform: none;
+}
+
+header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+header h1 em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--gold-light);
+}
+
+header p {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: rgba(214,233,248,0.7);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+/* ═══════════════════════════════════════════
+   NAVEGACIÓN
+═══════════════════════════════════════════ */
+.nav-wrap {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 24px 40px;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(232,208,138,0.85);
+  background: rgba(253,252,248,0.07);
+  border: 1px solid rgba(232,208,138,0.25);
+  border-radius: 50px;
+  padding: 14px 36px;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.34,1.2,0.64,1);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+.nav-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(232,208,138,0.15), rgba(91,159,212,0.1));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.nav-btn:hover::before  { opacity: 1; }
+.nav-btn:hover {
+  border-color: rgba(232,208,138,0.6);
+  color: var(--gold-light);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.nav-btn.active {
+  background: linear-gradient(135deg, rgba(200,168,75,0.3), rgba(46,110,166,0.25));
+  border-color: var(--gold);
+  color: var(--gold-light);
+  box-shadow: 0 4px 20px rgba(200,168,75,0.25);
+}
+.nav-btn .icon { font-size: 1.1rem; margin-right: 8px; }
+
+/* ═══════════════════════════════════════════
+   CONTENT PANEL
+═══════════════════════════════════════════ */
+.content {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+}
+
+.section { display: none; }
+.section.active {
+  display: block;
+  animation: section-in 0.5s cubic-bezier(0.34,1.1,0.64,1);
+}
+@keyframes section-in {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* Panel de cristal para contenido */
+.glass-panel {
+  background: rgba(253,252,248,0.92);
+  border-radius: 20px;
+  border: 1px solid rgba(200,168,75,0.2);
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.8);
+  overflow: hidden;
+}
+
+.panel-header {
+  background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%);
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.panel-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.panel-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.04em;
+}
+.panel-title span { color: var(--gold-light); }
+
+.panel-body { padding: 28px 32px; }
+
+/* ═══════════════════════════════════════════
+   SEMANA TABS
+═══════════════════════════════════════════ */
+.semana-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.semana-tab {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+  background: var(--cream);
+  border: 1px solid var(--border-blue);
+  border-radius: 50px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.semana-tab:hover { background: var(--blue-pale); border-color: var(--blue-mid); color: var(--blue-deep); }
+.semana-tab.active {
+  background: var(--blue-deep);
+  border-color: var(--blue-deep);
+  color: var(--gold-light);
+  box-shadow: 0 2px 12px rgba(26,58,92,0.3);
+}
+
+/* ═══════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════ */
+.lecturas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 20px;
+}
+
+.lectura-card {
+  background: var(--white);
+  border: 1px solid rgba(200,168,75,0.18);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: all 0.35s cubic-bezier(0.34,1.1,0.64,1);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+/* Franja superior dorada */
+.lectura-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--blue-light), var(--gold-light));
+}
+/* Sombra de agua sutil en hover */
+.lectura-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(26,58,92,0.18);
+  border-color: rgba(200,168,75,0.4);
+}
+
+.card-dia {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--blue-mid);
+  margin-bottom: 6px;
+}
+.card-titulo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 3px;
+}
+.card-subtitulo {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--text-soft);
+  margin-bottom: 10px;
+}
+.card-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--blue-pale);
+  border: 1px solid var(--border-blue);
+  border-radius: 50px;
+  padding: 3px 12px;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--blue-deep);
+  margin-bottom: 12px;
+}
+.card-ref::before { content: '✦'; color: var(--gold); font-size: 0.5rem; }
+
+.card-preview {
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-style: italic;
+  border-left: 2px solid var(--gold-pale);
+  padding-left: 10px;
+  margin-bottom: 14px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(200,168,75,0.12);
+}
+.card-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.card-btn.ver  { color: var(--blue-mid); border-color: rgba(46,110,166,0.3); background: transparent; }
+.card-btn.ver:hover  { background: var(--blue-pale); }
+.card-btn.edit { color: var(--gold);     border-color: rgba(200,168,75,0.4);  background: transparent; }
+.card-btn.edit:hover { background: var(--gold-pale); }
+.card-btn.del  { color: #c0392b;         border-color: rgba(192,57,43,0.2);   background: transparent; }
+.card-btn.del:hover  { background: #fdf0ee; }
+
+/* Card agregar */
+.add-card {
+  background: linear-gradient(135deg, rgba(26,58,92,0.04), rgba(200,168,75,0.04));
+  border: 2px dashed rgba(200,168,75,0.35);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  cursor: pointer;
+  transition: all 0.3s;
+  gap: 10px;
+  color: var(--text-soft);
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.add-card:hover {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, rgba(200,168,75,0.06), rgba(26,58,92,0.06));
+  color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-soft);
+}
+.add-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-pale), var(--blue-pale));
+  border: 1px solid rgba(200,168,75,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  transition: transform 0.3s;
+}
+.add-card:hover .add-icon { transform: rotate(15deg) scale(1.1); }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-soft);
+}
+.empty-state .e-icon { font-size: 3.5rem; margin-bottom: 14px; opacity: 0.5; }
+.empty-state p { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-style: italic; line-height: 1.6; }
+
+/* ═══════════════════════════════════════════
+   BOTONES
+═══════════════════════════════════════════ */
+.btn-gold {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--blue-deep);
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  border: none;
+  border-radius: 50px;
+  padding: 12px 30px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 3px 16px rgba(200,168,75,0.35);
+}
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(200,168,75,0.5);
+}
+.btn-ghost {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  background: transparent;
+  border: 1px solid rgba(200,168,75,0.25);
+  border-radius: 50px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--text-dark); }
+
+/* ═══════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15,39,68,0.75);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid rgba(200,168,75,0.2);
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 20px 80px rgba(15,39,68,0.4);
+  overflow: hidden;
+  margin: auto;
+  animation: modal-in 0.4s cubic-bezier(0.34,1.3,0.64,1);
+}
+@keyframes modal-in {
+  from { opacity:0; transform: scale(0.9) translateY(30px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+.modal-head {
+  background: linear-gradient(135deg, var(--blue-deep), var(--blue-mid));
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+.modal-head::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.modal-head h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.04em;
+}
+.modal-close {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  color: rgba(255,255,255,0.8);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.modal-close:hover { background: rgba(255,255,255,0.2); color: white; }
+
+.modal-body { padding: 32px; }
+
+/* ═══════════════════════════════════════════
+   FORMULARIO
+═══════════════════════════════════════════ */
+.form-group { margin-bottom: 20px; }
+.form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+label {
+  display: block;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue-mid);
+  margin-bottom: 7px;
+}
+
+input[type="text"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  background: var(--cream);
+  border: 1.5px solid rgba(200,168,75,0.2);
+  border-radius: 10px;
+  color: var(--text-dark);
+  font-family: 'EB Garamond', serif;
+  font-size: 1rem;
+  padding: 11px 16px;
+  transition: all 0.25s;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--blue-mid);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(46,110,166,0.1);
+}
+select option { background: var(--white); }
+textarea { resize: vertical; min-height: 110px; line-height: 1.65; }
+textarea.dios { min-height: 150px; border-color: rgba(200,168,75,0.35); }
+textarea.dios:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,168,75,0.1); }
+
+/* Label especial para Dios me dijo */
+.label-dios {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--blue-deep);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  margin-bottom: 8px;
+}
+.label-dios::before { content: '✦'; color: var(--gold); font-size: 0.7rem; font-style: normal; }
+
+/* Semana auto */
+.semana-row { display: flex; gap: 10px; align-items: center; }
+.semana-row input { flex: 1; }
+.btn-auto {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 11px 16px;
+  background: var(--blue-pale);
+  border: 1.5px solid var(--border-blue);
+  border-radius: 10px;
+  color: var(--blue-deep);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-auto:hover { background: var(--blue-mid); color: white; border-color: var(--blue-mid); }
+
+/* Color picker */
+.color-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.swatch {
+  width: 28px; height: 28px; border-radius: 50%;
+  cursor: pointer; border: 2px solid transparent;
+  transition: all 0.2s; flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.swatch:hover, .swatch.sel { transform: scale(1.25); border-color: var(--blue-deep); }
+input[type="color"].custom-color {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.1); padding: 0;
+  cursor: pointer; background: none; outline: none;
+}
+.color-prev {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  padding: 5px 14px;
+  background: var(--cream);
+  border: 1px solid rgba(200,168,75,0.2);
+  border-radius: 50px;
+}
+
+.form-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(200,168,75,0.15);
+}
+
+/* ═══════════════════════════════════════════
+   MODAL VER
+═══════════════════════════════════════════ */
+.view-body { padding: 32px; }
+.view-titulo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.view-subtitulo {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--text-soft);
+  margin-bottom: 14px;
+}
+.view-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.view-badge {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 50px;
+}
+.view-badge.fecha { background: var(--blue-pale); color: var(--blue-deep); border: 1px solid var(--border-blue); }
+.view-badge.ref   { background: var(--gold-pale); color: #7a5c00; border: 1px solid rgba(200,168,75,0.3); }
+
+.view-versiculos {
+  background: linear-gradient(135deg, var(--cream), var(--blue-pale));
+  border-left: 3px solid var(--gold);
+  padding: 18px 22px;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: 22px;
+  font-style: italic;
+  line-height: 1.75;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.view-dios-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--blue-deep);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.view-dios-label::before { content: '✦'; color: var(--gold); font-style: normal; font-size: 0.7rem; }
+.view-dios-text {
+  line-height: 1.8;
+  font-size: 1rem;
+  white-space: pre-wrap;
+  color: var(--text-dark);
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 32px; right: 32px;
+  background: var(--blue-deep);
+  border: 1px solid var(--gold);
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--gold-light);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  z-index: 9999;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.35s cubic-bezier(0.34,1.2,0.64,1);
+  pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .header-glass { padding: 28px 24px; }
+  .panel-body   { padding: 20px; }
+  .modal-body, .view-body { padding: 20px; }
+  .form-row { grid-template-columns: 1fr; }
+  .nav-btn  { padding: 12px 22px; font-size: 0.65rem; }
+}
+
+/* ═══════════════════════════════════════════
+   BOTÓN EXPORTAR PDF
+═══════════════════════════════════════════ */
+.btn-pdf {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: white;
+  background: linear-gradient(135deg, #1A3A5C, #2E6EA6);
+  border: none;
+  border-radius: 50px;
+  padding: 12px 26px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 3px 16px rgba(26,58,92,0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.btn-pdf:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(26,58,92,0.5);
+  background: linear-gradient(135deg, #0f2744, #1A3A5C);
+}
+
+/* ═══════════════════════════════════════════
+   MODAL EXPORTAR PDF
+═══════════════════════════════════════════ */
+.export-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.export-opt {
+  border: 2px solid rgba(200,168,75,0.2);
+  border-radius: 12px;
+  padding: 18px 16px;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-align: center;
+  background: var(--cream);
+}
+.export-opt:hover { border-color: var(--gold); background: var(--gold-pale); }
+.export-opt.selected { border-color: var(--blue-mid); background: var(--blue-pale); }
+.export-opt .opt-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.export-opt .opt-title {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-deep);
+  margin-bottom: 4px;
+}
+.export-opt .opt-desc {
+  font-family: 'EB Garamond', serif;
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  font-style: italic;
+}
+
+.semana-select-export {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* ═══════════════════════════════════════════
+   ESTILOS DE IMPRESIÓN / PDF
+═══════════════════════════════════════════ */
+@media print {
+  /* Ocultar todo lo que no es el PDF */
+  .water-bg, header, nav, .modal-overlay,
+  .toast, .card-actions, .add-card,
+  .semana-tabs, .panel-header .btn-gold,
+  .panel-header .btn-pdf { display: none !important; }
+
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    background: white !important;
+    font-family: 'EB Garamond', serif;
+    color: #1C2B3A;
+    font-size: 11pt;
+  }
+
+  .app { position: static; }
+  .content { max-width: 100%; padding: 0; margin: 0; }
+  .section { display: block !important; }
+  .glass-panel { box-shadow: none; border: none; border-radius: 0; background: white; }
+
+  /* Portada del PDF */
+  .pdf-cover {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    page-break-after: always;
+    padding: 60px 40px;
+    background: white;
+  }
+  .pdf-cover-cross {
+    width: 60px; height: 66px;
+    position: relative;
+    margin: 0 auto 30px;
+  }
+  .pdf-cover-cross::before {
+    content: '';
+    position: absolute;
+    width: 8px; height: 66px;
+    background: #C8A84B;
+    left: 50%; transform: translateX(-50%);
+    border-radius: 3px;
+  }
+  .pdf-cover-cross::after {
+    content: '';
+    position: absolute;
+    width: 48px; height: 8px;
+    background: #C8A84B;
+    top: 28%; left: 50%; transform: translateX(-50%);
+    border-radius: 3px;
+  }
+  .pdf-cover h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36pt;
+    font-weight: 600;
+    color: #1A3A5C;
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+  }
+  .pdf-cover .pdf-subtitle {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 9pt;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #7A95AE;
+    margin-bottom: 30px;
+  }
+  .pdf-cover .pdf-verse {
+    font-family: 'EB Garamond', serif;
+    font-size: 12pt;
+    font-style: italic;
+    color: #3D5570;
+    max-width: 400px;
+    line-height: 1.6;
+    border-top: 1px solid #C8A84B;
+    border-bottom: 1px solid #C8A84B;
+    padding: 14px 0;
+    margin: 0 auto 30px;
+  }
+  .pdf-cover .pdf-date {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 8pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #7A95AE;
+  }
+
+  /* Encabezado de sección en PDF */
+  .pdf-section-title {
+    display: block !important;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20pt;
+    font-weight: 600;
+    color: #1A3A5C;
+    border-bottom: 2px solid #C8A84B;
+    padding-bottom: 8px;
+    margin-bottom: 24px;
+    margin-top: 0;
+  }
+
+  /* Panel header en impresión */
+  .panel-header {
+    background: #1A3A5C !important;
+    padding: 16px 24px !important;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+  }
+  .panel-title { font-size: 14pt !important; }
+
+  /* Cards en PDF */
+  .lecturas-grid {
+    display: block !important;
+  }
+  .lectura-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 20px;
+    border: 1px solid #E8D08A !important;
+    border-radius: 8px !important;
+    padding: 20px 24px !important;
+    background: white !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  .lectura-card::before {
+    background: linear-gradient(90deg, #C8A84B, #2E6EA6) !important;
+    height: 3px !important;
+  }
+
+  .card-dia {
+    font-size: 7.5pt !important;
+    color: #2E6EA6 !important;
+    letter-spacing: 0.15em;
+    margin-bottom: 5px;
+  }
+  .card-titulo {
+    font-size: 15pt !important;
+    font-family: 'Cormorant Garamond', serif !important;
+    margin-bottom: 3px;
+  }
+  .card-subtitulo { font-size: 10pt !important; color: #7A95AE !important; }
+  .card-ref {
+    font-size: 7.5pt !important;
+    background: #D6E9F8 !important;
+    border: 1px solid rgba(46,110,166,0.3) !important;
+    display: inline-block !important;
+    padding: 2px 10px !important;
+    border-radius: 50px !important;
+    margin-bottom: 10px;
+  }
+  .card-preview {
+    font-size: 10pt !important;
+    -webkit-line-clamp: unset !important;
+    display: block !important;
+    overflow: visible !important;
+    border-left: 2px solid #C8A84B;
+    padding-left: 10px;
+    color: #3D5570 !important;
+    margin-bottom: 10px;
+  }
+
+  /* Sección "Dios me dijo" en PDF */
+  .pdf-dios-block {
+    display: block !important;
+    margin-top: 10px;
+    background: #F8F4EC;
+    border-left: 3px solid #C8A84B;
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+  }
+  .pdf-dios-label {
+    display: block !important;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9pt;
+    font-weight: 600;
+    font-style: italic;
+    color: #1A3A5C;
+    margin-bottom: 4px;
+  }
+  .pdf-dios-label::before { content: '✦ '; color: #C8A84B; }
+  .pdf-dios-text {
+    display: block !important;
+    font-size: 10pt;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+
+  /* Pie de página */
+  .pdf-footer {
+    display: block !important;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #E8D08A;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 7pt;
+    color: #7A95AE;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 40px;
+  }
+
+  /* Ocultar elementos solo de pantalla */
+  .pdf-cover   { display: flex !important; }
+  .pdf-footer  { display: block !important; }
+  #section-todas.section { display: none !important; }
+  #section-r07.section { display: none !important; }
+  #pdf-print-area { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ FONDO DE AGUA ═══ -->
+<div class="water-bg">
+  <div class="ambient-light"></div>
+  <div class="light-ray"></div>
+  <div class="light-ray"></div>
+  <div class="light-ray"></div>
+  <div class="light-ray"></div>
+  <div class="bubbles">
+    <div class="bubble"></div><div class="bubble"></div>
+    <div class="bubble"></div><div class="bubble"></div>
+    <div class="bubble"></div><div class="bubble"></div>
+    <div class="bubble"></div><div class="bubble"></div>
+  </div>
+  <!-- Ondas SVG -->
+  <div class="wave wave-1">
+    <svg viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="rgba(255,255,255,0.9)" d="M0,80 C180,140 360,20 540,80 C720,140 900,20 1080,80 C1260,140 1440,60 1440,80 L1440,180 L0,180 Z"/>
+      <path fill="rgba(255,255,255,0.9)" d="M0,80 C180,140 360,20 540,80 C720,140 900,20 1080,80 C1260,140 1440,60 1440,80 L1440,180 L0,180 Z" transform="translate(720,0)"/>
+    </svg>
+  </div>
+  <div class="wave wave-2">
+    <svg viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="rgba(91,159,212,0.8)" d="M0,100 C200,40 400,160 600,100 C800,40 1000,140 1200,100 C1320,80 1440,110 1440,100 L1440,180 L0,180 Z"/>
+      <path fill="rgba(91,159,212,0.8)" d="M0,100 C200,40 400,160 600,100 C800,40 1000,140 1200,100 C1320,80 1440,110 1440,100 L1440,180 L0,180 Z" transform="translate(720,0)"/>
+    </svg>
+  </div>
+  <div class="wave wave-3">
+    <svg viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="rgba(200,168,75,0.5)" d="M0,120 C240,60 480,150 720,120 C960,90 1200,150 1440,120 L1440,180 L0,180 Z"/>
+      <path fill="rgba(200,168,75,0.5)" d="M0,120 C240,60 480,150 720,120 C960,90 1200,150 1440,120 L1440,180 L0,180 Z" transform="translate(720,0)"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-glass">
+      <div class="cross-icon"></div>
+      <p class="header-verse">"Como el ciervo brama por las corrientes de las aguas..." — Sal 42:1</p>
+      <h1>Mi <em>Diario</em> Bíblico</h1>
+      <p>Escucha · Registra · Atesora su Palabra</p>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="nav-wrap">
+    <button class="nav-btn active" id="btn-r07" onclick="showSection('r07')">
+      <span class="icon">📖</span> R07 — Registro Semanal
+    </button>
+    <button class="nav-btn" id="btn-todas" onclick="showSection('todas')">
+      <span class="icon">📚</span> Todas las Lecturas
+    </button>
+    <button class="btn-pdf" onclick="openExportModal()">
+      📄 Exportar PDF
+    </button>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- SECCIÓN R07 -->
+    <div class="section active" id="section-r07">
+      <div class="glass-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">📅 R07 — <span>Los 7 Días</span></h2>
+          <button class="btn-gold" onclick="openForm()">+ Nueva Lectura</button>
+        </div>
+        <div class="panel-body">
+          <div class="semana-tabs" id="semana-tabs"></div>
+          <div class="lecturas-grid" id="r07-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN TODAS -->
+    <div class="section" id="section-todas">
+      <div class="glass-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">📚 <span>Todas</span> mis Lecturas</h2>
+          <button class="btn-gold" onclick="openForm()">+ Nueva Lectura</button>
+        </div>
+        <div class="panel-body">
+          <div class="lecturas-grid" id="todas-grid"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ MODAL FORMULARIO ═══ -->
+<div class="modal-overlay" id="form-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="form-title">Nueva Lectura</h3>
+      <button class="modal-close" onclick="closeModal('form-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="lectura-form">
+        <input type="hidden" id="edit-id">
+
+        <div class="form-group">
+          <label>Título *</label>
+          <input type="text" id="f-titulo" placeholder="Ej: La fe que mueve montañas" required>
+        </div>
+
+        <div class="form-group">
+          <label>Subtítulo</label>
+          <input type="text" id="f-subtitulo" placeholder="Ej: Reflexión sobre Mateo 17:20">
+        </div>
+
+        <div class="form-row form-group">
+          <div>
+            <label>Fecha *</label>
+            <input type="date" id="f-fecha" required>
+          </div>
+          <div>
+            <label>Semana / Grupo</label>
+            <div class="semana-row">
+              <input type="text" id="f-semana" placeholder="Ej: Semana 12/05/2025">
+              <button type="button" class="btn-auto" onclick="autoSemana()">Auto</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Libro de la Biblia</label>
+          <select id="f-libro">
+            <option value="">— Selecciona un libro —</option>
+            <optgroup label="Antiguo Testamento">
+              <option>Génesis</option><option>Éxodo</option><option>Levítico</option>
+              <option>Números</option><option>Deuteronomio</option><option>Josué</option>
+              <option>Jueces</option><option>Rut</option><option>1 Samuel</option>
+              <option>2 Samuel</option><option>1 Reyes</option><option>2 Reyes</option>
+              <option>1 Crónicas</option><option>2 Crónicas</option><option>Esdras</option>
+              <option>Nehemías</option><option>Ester</option><option>Job</option>
+              <option>Salmos</option><option>Proverbios</option><option>Eclesiastés</option>
+              <option>Cantares</option><option>Isaías</option><option>Jeremías</option>
+              <option>Lamentaciones</option><option>Ezequiel</option><option>Daniel</option>
+              <option>Oseas</option><option>Joel</option><option>Amós</option>
+              <option>Abdías</option><option>Jonás</option><option>Miqueas</option>
+              <option>Nahúm</option><option>Habacuc</option><option>Sofonías</option>
+              <option>Hageo</option><option>Zacarías</option><option>Malaquías</option>
+            </optgroup>
+            <optgroup label="Nuevo Testamento">
+              <option>Mateo</option><option>Marcos</option><option>Lucas</option>
+              <option>Juan</option><option>Hechos</option><option>Romanos</option>
+              <option>1 Corintios</option><option>2 Corintios</option><option>Gálatas</option>
+              <option>Efesios</option><option>Filipenses</option><option>Colosenses</option>
+              <option>1 Tesalonicenses</option><option>2 Tesalonicenses</option>
+              <option>1 Timoteo</option><option>2 Timoteo</option><option>Tito</option>
+              <option>Filemón</option><option>Hebreos</option><option>Santiago</option>
+              <option>1 Pedro</option><option>2 Pedro</option><option>1 Juan</option>
+              <option>2 Juan</option><option>3 Juan</option><option>Judas</option>
+              <option>Apocalipsis</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Versículos leídos</label>
+          <div class="form-row">
+            <input type="text" id="f-v-inicio" placeholder="Desde: ej. 3:1">
+            <input type="text" id="f-v-fin"    placeholder="Hasta: ej. 3:21">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Texto de los versículos</label>
+          <textarea id="f-texto" placeholder="Pega aquí el pasaje bíblico que leíste..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <div class="label-dios">Dios me dijo</div>
+          <textarea class="dios" id="f-dios" placeholder="Escribe aquí lo que el Señor habló a tu corazón hoy..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Color del texto</label>
+          <div class="color-row">
+            <div class="swatch sel" style="background:#1C2B3A" data-c="#1C2B3A" onclick="pickColor(this)"></div>
+            <div class="swatch"     style="background:#C8A84B" data-c="#C8A84B" onclick="pickColor(this)"></div>
+            <div class="swatch"     style="background:#1A3A5C" data-c="#1A3A5C" onclick="pickColor(this)"></div>
+            <div class="swatch"     style="background:#2E6EA6" data-c="#2E6EA6" onclick="pickColor(this)"></div>
+            <div class="swatch"     style="background:#5B9FD4" data-c="#5B9FD4" onclick="pickColor(this)"></div>
+            <div class="swatch"     style="background:#7fbb8a" data-c="#7fbb8a" onclick="pickColor(this)"></div>
+            <div class="swatch"     style="background:#c0392b" data-c="#c0392b" onclick="pickColor(this)"></div>
+            <input type="color" class="custom-color" id="color-custom" value="#1C2B3A" oninput="pickCustom(this.value)">
+            <span class="color-prev" id="color-prev" style="color:#1C2B3A">Así se verá</span>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button type="button" class="btn-ghost" onclick="closeModal('form-modal')">Cancelar</button>
+          <button type="submit" class="btn-gold">💾 Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL VER ═══ -->
+<div class="modal-overlay" id="view-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Lectura</h3>
+      <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+    </div>
+    <div class="view-body" id="view-content"></div>
+    <div class="form-footer" style="padding: 0 32px 28px;">
+      <button class="btn-ghost" onclick="closeModal('view-modal')">Cerrar</button>
+      <button class="btn-gold"  id="view-edit-btn">✏️ Editar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ÁREA OCULTA PARA IMPRESIÓN PDF ═══ -->
+<div id="pdf-print-area" style="display:none"></div>
+
+<!-- ═══ MODAL EXPORTAR PDF ═══ -->
+<div class="modal-overlay" id="export-modal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head">
+      <h3>📄 Exportar a PDF</h3>
+      <button class="modal-close" onclick="closeModal('export-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="export-options">
+        <div class="export-opt selected" id="opt-semana" onclick="selectExportOpt('semana')">
+          <div class="opt-icon">📅</div>
+          <div class="opt-title">Por Semana</div>
+          <div class="opt-desc">Exporta los 7 días de una semana específica</div>
+        </div>
+        <div class="export-opt" id="opt-todas" onclick="selectExportOpt('todas')">
+          <div class="opt-icon">📚</div>
+          <div class="opt-title">Todas</div>
+          <div class="opt-desc">Exporta el historial completo de lecturas</div>
+        </div>
+      </div>
+
+      <div id="semana-select-wrap">
+        <label>Selecciona la semana</label>
+        <select id="export-semana-sel" class="semana-select-export" style="margin-top:7px">
+          <option value="">— Elige una semana —</option>
+        </select>
+      </div>
+
+      <div class="form-footer" style="margin-top:8px">
+        <button class="btn-ghost" onclick="closeModal('export-modal')">Cancelar</button>
+        <button class="btn-gold" onclick="generarPDF()">📥 Generar PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+//  ALMACENAMIENTO — localStorage
+// ═══════════════════════════════════════
+const db = {
+  getAll()    { try { return JSON.parse(localStorage.getItem('bibleData')||'[]'); } catch{ return []; } },
+  save(d)     { localStorage.setItem('bibleData', JSON.stringify(d)); },
+  insert(d)   { const all=[...this.getAll(),{...d,id:Date.now(),created_at:new Date().toISOString()}]; this.save(all); return all.at(-1); },
+  update(id,d){ const all=this.getAll(); const i=all.findIndex(x=>x.id==id); if(i<0)return null; all[i]={...all[i],...d}; this.save(all); return all[i]; },
+  delete(id)  { this.save(this.getAll().filter(x=>x.id!=id)); },
+  byId(id)    { return this.getAll().find(x=>x.id==id)||null; },
+  bySemana(s) { return this.getAll().filter(x=>x.semana_grupo===s).sort((a,b)=>a.fecha>b.fecha?1:-1); },
+  semanas()   {
+    const m={};
+    this.getAll().forEach(l=>{ if(!l.semana_grupo)return; if(!m[l.semana_grupo])m[l.semana_grupo]={semana_grupo:l.semana_grupo,total:0,inicio:l.fecha}; m[l.semana_grupo].total++; });
+    return Object.values(m).sort((a,b)=>b.inicio>a.inicio?1:-1);
+  }
+};
+
+// ═══════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════
+let activeColor   = '#1C2B3A';
+let activeSection = 'r07';
+let activeSemana  = null;
+let exportOpt     = 'semana';
+
+// ═══════════════════════════════════════
+//  NAVEGACIÓN
+// ═══════════════════════════════════════
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  document.getElementById('btn-'+name).classList.add('active');
+  activeSection = name;
+  name==='r07' ? renderSemanas() : renderTodas();
+}
+
+// ═══════════════════════════════════════
+//  R07
+// ═══════════════════════════════════════
+function renderSemanas() {
+  const tabs = document.getElementById('semana-tabs');
+  const sems = db.semanas();
+  if (!sems.length) {
+    tabs.innerHTML = '';
+    document.getElementById('r07-grid').innerHTML = emptyState();
+    return;
+  }
+  tabs.innerHTML = sems.map(s=>`
+    <button class="semana-tab${activeSemana===s.semana_grupo?' active':''}"
+      onclick="selSemana('${s.semana_grupo}',this)">
+      ${s.semana_grupo} <span style="opacity:.5;margin-left:5px">(${s.total})</span>
+    </button>`).join('');
+  if (!activeSemana || !sems.find(s=>s.semana_grupo===activeSemana))
+    activeSemana = sems[0].semana_grupo;
+  tabs.querySelectorAll('.semana-tab').forEach(t=>{
+    if (t.textContent.trim().startsWith(activeSemana)) t.classList.add('active');
+  });
+  renderR07();
+}
+
+function selSemana(sem, el) {
+  document.querySelectorAll('.semana-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  activeSemana = sem;
+  renderR07();
+}
+
+function renderR07() {
+  const grid = document.getElementById('r07-grid');
+  const list = db.bySemana(activeSemana);
+  grid.innerHTML = list.map(cardHTML).join('') +
+    `<div class="add-card" onclick="openForm()">
+      <div class="add-icon">✝</div>
+      Agregar día
+    </div>`;
+}
+
+function renderTodas() {
+  const grid = document.getElementById('todas-grid');
+  const list = db.getAll().sort((a,b)=>b.fecha>a.fecha?1:-1);
+  grid.innerHTML = list.length ? list.map(cardHTML).join('') : emptyState();
+}
+
+// ═══════════════════════════════════════
+//  CARD HTML
+// ═══════════════════════════════════════
+function cardHTML(l) {
+  const fecha = l.fecha
+    ? new Date(l.fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})
+    : '';
+  const ref = [l.libro, l.versiculo_inicio, l.versiculo_fin ? '– '+l.versiculo_fin : ''].filter(Boolean).join(' ');
+  return `<div class="lectura-card">
+    <div class="card-dia">${fecha}</div>
+    <div class="card-titulo" style="color:${l.color_letra||'#1C2B3A'}">${esc(l.titulo)}</div>
+    ${l.subtitulo?`<div class="card-subtitulo">${esc(l.subtitulo)}</div>`:''}
+    ${ref?`<div class="card-ref">${esc(ref)}</div>`:''}
+    ${l.dios_me_dijo?`<div class="card-preview">${esc(l.dios_me_dijo)}</div>`:''}
+    <div class="card-actions">
+      <button class="card-btn ver"  onclick="verLectura(${l.id})">👁 Ver</button>
+      <button class="card-btn edit" onclick="editLectura(${l.id})">✏️ Editar</button>
+      <button class="card-btn del"  onclick="delLectura(${l.id})">🗑 Borrar</button>
+    </div>
+  </div>`;
+}
+
+function emptyState() {
+  return `<div class="empty-state">
+    <div class="e-icon">📖</div>
+    <p>Aún no hay lecturas aquí.<br>¡Empieza registrando tu primera entrada!</p>
+  </div>`;
+}
+
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════
+//  FORMULARIO
+// ═══════════════════════════════════════
+function openForm(data) {
+  document.getElementById('form-title').textContent = data ? 'Editar Lectura' : 'Nueva Lectura';
+  document.getElementById('lectura-form').reset();
+  document.getElementById('edit-id').value = '';
+  activeColor = '#1C2B3A';
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+  document.querySelector('.swatch').classList.add('sel');
+  document.getElementById('color-custom').value = activeColor;
+  document.getElementById('color-prev').style.color = activeColor;
+  document.getElementById('f-fecha').value = new Date().toISOString().split('T')[0];
+  if (activeSemana) document.getElementById('f-semana').value = activeSemana;
+
+  if (data) {
+    document.getElementById('edit-id').value      = data.id;
+    document.getElementById('f-titulo').value     = data.titulo||'';
+    document.getElementById('f-subtitulo').value  = data.subtitulo||'';
+    document.getElementById('f-fecha').value      = data.fecha||'';
+    document.getElementById('f-semana').value     = data.semana_grupo||'';
+    document.getElementById('f-libro').value      = data.libro||'';
+    document.getElementById('f-v-inicio').value   = data.versiculo_inicio||'';
+    document.getElementById('f-v-fin').value      = data.versiculo_fin||'';
+    document.getElementById('f-texto').value      = data.versiculos_texto||'';
+    document.getElementById('f-dios').value       = data.dios_me_dijo||'';
+    if (data.color_letra) { activeColor = data.color_letra; document.getElementById('color-custom').value=activeColor; document.getElementById('color-prev').style.color=activeColor; }
+  }
+  document.getElementById('form-modal').classList.add('open');
+}
+
+document.getElementById('lectura-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('edit-id').value;
+  const payload = {
+    titulo:           document.getElementById('f-titulo').value.trim(),
+    subtitulo:        document.getElementById('f-subtitulo').value.trim(),
+    fecha:            document.getElementById('f-fecha').value,
+    semana_grupo:     document.getElementById('f-semana').value.trim(),
+    libro:            document.getElementById('f-libro').value,
+    versiculo_inicio: document.getElementById('f-v-inicio').value.trim(),
+    versiculo_fin:    document.getElementById('f-v-fin').value.trim(),
+    versiculos_texto: document.getElementById('f-texto').value.trim(),
+    dios_me_dijo:     document.getElementById('f-dios').value.trim(),
+    color_letra:      activeColor,
+  };
+  id ? db.update(id, payload) : db.insert(payload);
+  toast(id ? '✦ Lectura actualizada' : '✦ Lectura guardada');
+  closeModal('form-modal');
+  refresh();
+});
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ═══════════════════════════════════════
+//  VER / EDITAR / BORRAR
+// ═══════════════════════════════════════
+function verLectura(id) {
+  const l = db.byId(id);
+  if (!l) return;
+  const fecha = l.fecha ? new Date(l.fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) : '';
+  const ref   = [l.libro, l.versiculo_inicio, l.versiculo_fin?'– '+l.versiculo_fin:''].filter(Boolean).join(' ');
+  document.getElementById('view-content').innerHTML = `
+    <div class="view-titulo" style="color:${l.color_letra||'#1C2B3A'}">${esc(l.titulo)}</div>
+    ${l.subtitulo?`<div class="view-subtitulo">${esc(l.subtitulo)}</div>`:''}
+    <div class="view-meta">
+      ${fecha?`<span class="view-badge fecha">📅 ${fecha}</span>`:''}
+      ${ref?`<span class="view-badge ref">✦ ${esc(ref)}</span>`:''}
+    </div>
+    ${l.versiculos_texto?`<div class="view-versiculos">${esc(l.versiculos_texto)}</div>`:''}
+    ${l.dios_me_dijo?`
+      <div class="view-dios-label">Dios me dijo</div>
+      <div class="view-dios-text" style="color:${l.color_letra||'#1C2B3A'}">${esc(l.dios_me_dijo)}</div>`:''}
+  `;
+  document.getElementById('view-edit-btn').onclick = ()=>{ closeModal('view-modal'); editLectura(id); };
+  document.getElementById('view-modal').classList.add('open');
+}
+
+function editLectura(id) { const l=db.byId(id); if(l) openForm(l); }
+
+function delLectura(id) {
+  if (!confirm('¿Eliminar esta lectura?')) return;
+  db.delete(id);
+  toast('Lectura eliminada');
+  refresh();
+}
+
+// ═══════════════════════════════════════
+//  COLOR
+// ═══════════════════════════════════════
+function pickColor(el) {
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel');
+  activeColor = el.dataset.c;
+  document.getElementById('color-custom').value = activeColor;
+  document.getElementById('color-prev').style.color = activeColor;
+}
+function pickCustom(v) {
+  activeColor = v;
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+  document.getElementById('color-prev').style.color = v;
+}
+
+// ═══════════════════════════════════════
+//  AUTO SEMANA
+// ═══════════════════════════════════════
+function autoSemana() {
+  const fv = document.getElementById('f-fecha').value || new Date().toISOString().split('T')[0];
+  const d  = new Date(fv+'T12:00:00');
+  const st = new Date(d);
+  st.setDate(d.getDate() - d.getDay() + 1);
+  document.getElementById('f-semana').value =
+    `Semana ${String(st.getDate()).padStart(2,'0')}/${String(st.getMonth()+1).padStart(2,'0')}/${st.getFullYear()}`;
+}
+
+// ═══════════════════════════════════════
+//  EXPORTAR PDF
+// ═══════════════════════════════════════
+function openExportModal() {
+  // Cargar semanas en el select
+  const sel = document.getElementById('export-semana-sel');
+  const sems = db.semanas();
+  sel.innerHTML = '<option value="">— Elige una semana —</option>' +
+    sems.map(s=>`<option value="${s.semana_grupo}">${s.semana_grupo} (${s.total} días)</option>`).join('');
+  if (activeSemana) sel.value = activeSemana;
+  selectExportOpt('semana');
+  document.getElementById('export-modal').classList.add('open');
+}
+
+function selectExportOpt(opt) {
+  exportOpt = opt;
+  document.getElementById('opt-semana').classList.toggle('selected', opt==='semana');
+  document.getElementById('opt-todas').classList.toggle('selected', opt==='todas');
+  document.getElementById('semana-select-wrap').style.display = opt==='semana' ? 'block' : 'none';
+}
+
+function generarPDF() {
+  let lecturas = [];
+  let titulo   = '';
+
+  if (exportOpt === 'semana') {
+    const sem = document.getElementById('export-semana-sel').value;
+    if (!sem) { toast('⚠️ Selecciona una semana'); return; }
+    lecturas = db.bySemana(sem);
+    titulo   = sem;
+  } else {
+    lecturas = db.getAll().sort((a,b)=>a.fecha>b.fecha?1:-1);
+    titulo   = 'Historial Completo';
+  }
+
+  if (!lecturas.length) { toast('No hay lecturas para exportar'); return; }
+
+  closeModal('export-modal');
+  toast('📄 Preparando PDF...');
+
+  // Construir HTML para impresión
+  const fechaHoy = new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
+
+  const cardsHTML = lecturas.map(l => {
+    const fecha = l.fecha
+      ? new Date(l.fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'})
+      : '';
+    const ref = [l.libro, l.versiculo_inicio, l.versiculo_fin?'– '+l.versiculo_fin:''].filter(Boolean).join(' ');
+    return `
+      <div class="lectura-card" style="page-break-inside:avoid;margin-bottom:20px;border:1px solid #E8D08A;border-radius:8px;padding:20px 24px;background:white;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C8A84B,#2E6EA6,#E8D08A);"></div>
+        <div style="font-family:'Josefin Sans',sans-serif;font-size:7.5pt;color:#2E6EA6;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:5px;">${fecha}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:16pt;font-weight:600;color:${l.color_letra||'#1C2B3A'};margin-bottom:3px;">${esc(l.titulo)}</div>
+        ${l.subtitulo?`<div style="font-family:'EB Garamond',serif;font-size:10pt;font-style:italic;color:#7A95AE;margin-bottom:8px;">${esc(l.subtitulo)}</div>`:''}
+        ${ref?`<div style="display:inline-block;background:#D6E9F8;border:1px solid rgba(46,110,166,0.3);border-radius:50px;padding:2px 12px;font-family:'Josefin Sans',sans-serif;font-size:7.5pt;color:#1A3A5C;margin-bottom:12px;">✦ ${esc(ref)}</div>`:''}
+        ${l.versiculos_texto?`<div style="background:#F8F4EC;border-left:3px solid #C8A84B;padding:10px 14px;border-radius:0 6px 6px 0;font-family:'EB Garamond',serif;font-size:10pt;font-style:italic;line-height:1.7;margin-bottom:12px;">${esc(l.versiculos_texto)}</div>`:''}
+        ${l.dios_me_dijo?`
+          <div style="margin-top:10px;background:#F0F6FB;border-left:3px solid #C8A84B;padding:10px 14px;border-radius:0 6px 6px 0;">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:9pt;font-weight:600;font-style:italic;color:#1A3A5C;margin-bottom:5px;">✦ Dios me dijo</div>
+            <div style="font-family:'EB Garamond',serif;font-size:10pt;line-height:1.75;white-space:pre-wrap;color:${l.color_letra||'#1C2B3A'};">${esc(l.dios_me_dijo)}</div>
+          </div>`:''}
+      </div>`;
+  }).join('');
+
+  const printHTML = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Mi Diario Bíblico — ${titulo}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+      <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'EB Garamond',serif; background:white; color:#1C2B3A; }
+        @page { margin: 2cm 2.2cm; size: A4; }
+        @media print { body { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }
+
+        /* PORTADA */
+        .cover {
+          display:flex; flex-direction:column; align-items:center; justify-content:center;
+          min-height:100vh; text-align:center; padding:60px 40px;
+          page-break-after:always;
+        }
+        .cover-line { width:60px; height:1px; background:#C8A84B; margin:20px auto; }
+        .cover-cross { position:relative; width:50px; height:55px; margin:0 auto 24px; }
+        .cover-cross::before { content:''; position:absolute; width:7px; height:55px; background:#C8A84B; left:50%; transform:translateX(-50%); border-radius:3px; }
+        .cover-cross::after  { content:''; position:absolute; width:42px; height:7px; background:#C8A84B; top:28%; left:50%; transform:translateX(-50%); border-radius:3px; }
+        .cover h1 { font-family:'Cormorant Garamond',serif; font-size:38pt; font-weight:600; color:#1A3A5C; letter-spacing:0.04em; margin-bottom:6px; }
+        .cover h1 em { font-style:italic; font-weight:300; color:#C8A84B; }
+        .cover .sub { font-family:'Josefin Sans',sans-serif; font-size:8pt; letter-spacing:0.3em; text-transform:uppercase; color:#7A95AE; margin-bottom:28px; }
+        .cover .section-name { font-family:'Cormorant Garamond',serif; font-size:18pt; font-weight:600; color:#2E6EA6; margin-bottom:20px; }
+        .cover .verse { font-family:'EB Garamond',serif; font-size:11pt; font-style:italic; color:#3D5570; max-width:380px; line-height:1.7; border-top:1px solid #C8A84B; border-bottom:1px solid #C8A84B; padding:14px 0; margin:0 auto 28px; }
+        .cover .date { font-family:'Josefin Sans',sans-serif; font-size:7.5pt; letter-spacing:0.18em; text-transform:uppercase; color:#7A95AE; }
+
+        /* CONTENIDO */
+        .content-page { padding: 0; }
+        .section-header {
+          display:flex; align-items:center; gap:14px;
+          border-bottom:2px solid #C8A84B; padding-bottom:12px; margin-bottom:28px;
+        }
+        .section-header h2 { font-family:'Cormorant Garamond',serif; font-size:20pt; font-weight:600; color:#1A3A5C; }
+        .section-header .count { font-family:'Josefin Sans',sans-serif; font-size:7.5pt; letter-spacing:0.12em; text-transform:uppercase; color:#7A95AE; margin-left:auto; }
+
+        /* FOOTER */
+        .pdf-footer { text-align:center; padding-top:30px; border-top:1px solid #E8D08A; margin-top:40px; }
+        .pdf-footer p { font-family:'Josefin Sans',sans-serif; font-size:7pt; color:#7A95AE; letter-spacing:0.18em; text-transform:uppercase; }
+        .pdf-footer .cross-small { color:#C8A84B; font-size:10pt; display:block; margin-bottom:6px; }
+      </style>
+    </head>
+    <body>
+
+    <!-- PORTADA -->
+    <div class="cover">
+      <div class="cover-cross"></div>
+      <h1>Mi <em>Diario</em> Bíblico</h1>
+      <p class="sub">Escucha · Registra · Atesora su Palabra</p>
+      <div class="cover-line"></div>
+      <div class="section-name">${esc(titulo)}</div>
+      <div class="verse">"Como el ciervo brama por las corrientes de las aguas, así clama por ti, oh Dios, el alma mía."<br>— Salmos 42:1</div>
+      <p class="date">Generado el ${fechaHoy} · ${lecturas.length} lectura${lecturas.length!==1?'s':''}</p>
+    </div>
+
+    <!-- LECTURAS -->
+    <div class="content-page">
+      <div class="section-header">
+        <h2>Mis Lecturas</h2>
+        <span class="count">${lecturas.length} registro${lecturas.length!==1?'s':''}</span>
+      </div>
+      ${cardsHTML}
+      <div class="pdf-footer">
+        <span class="cross-small">✝</span>
+        <p>Mi Diario Bíblico · Guardando cada palabra de Dios</p>
+      </div>
+    </div>
+
+    <script>window.onload=()=>{ setTimeout(()=>window.print(), 600); }<\/script>
+    </body>
+    </html>`;
+
+  // Abrir ventana de impresión
+  const win = window.open('', '_blank', 'width=900,height=700');
+  win.document.write(printHTML);
+  win.document.close();
+}
+
+// ═══════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════
+//  REFRESH
+// ═══════════════════════════════════════
+function refresh() { activeSection==='r07' ? renderSemanas() : renderTodas(); }
+
+// Cerrar modal al click fuera
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+});
+
+// INIT
+renderSemanas();
+</script>
+</body>
+</html>
